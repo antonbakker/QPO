@@ -6,7 +6,11 @@ SELECT
 	DatumUrenReg AS datum,
 	Uren AS aantal,
 	KostenIntern AS bedrag,
-	Voornaam + ' ' + Tussenvoegsel + ' ' + Achternaam AS omschrijving,
+	case Voornaam
+		WHEN 
+
+
+	+ ' ' + Tussenvoegsel + ' ' + Achternaam AS omschrijving,
 	ProjectNr AS project,
 	PersoneelNo,
 	humres.socsec_nr,
