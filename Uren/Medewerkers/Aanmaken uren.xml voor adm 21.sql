@@ -6,11 +6,7 @@ SELECT
 	DatumUrenReg AS datum,
 	Uren AS aantal,
 	KostenIntern AS bedrag,
-	case Voornaam
-		WHEN 
-
-
-	+ ' ' + Tussenvoegsel + ' ' + Achternaam AS omschrijving,
+	ISNULL(Voornaam, '') 	+ ' ' + ISNULL(Tussenvoegsel, '') + ' ' + ISNULL(Achternaam, '') AS omschrijving,
 	ProjectNr AS project,
 	PersoneelNo,
 	humres.socsec_nr,
@@ -39,7 +35,7 @@ SELECT
 	DatumUrenReg AS datum,
 	Uren AS	aantal,
 	cast(KostenIntern as float)*-1 AS bedrag,
-	Voornaam + ' ' + Tussenvoegsel + ' ' + Achternaam AS omschrijving,
+	ISNULL(Voornaam, '') 	+ ' ' + ISNULL(Tussenvoegsel, '') + ' ' + ISNULL(Achternaam, '') AS omschrijving,
 	'' AS project,
 	PersoneelNo,
 	humres.socsec_nr,
