@@ -26,7 +26,8 @@ WHERE
 	(LEFT(QDWH.dbo.QSagroSoftUren.ProjectNr, 2) = Division)
 	and humres.res_id is not null
 	and emp_stat ='A'
-	and ProjectNr in (select ProjectNr collate database_default from PRProject)
+	-- onderstaande regel verwijderd, omdat anders de nieuwe projecten niet worden aagnemaakt.
+/*	and ProjectNr in (select ProjectNr collate database_default from PRProject) */
 			-- indirecte projecten uitsluiten:
 	and  left(right([ProjectNr],4),3)  not in (999)
 	and QSagroSoftUren.id not in (select  freefield5 from  [QDWH]..Q_idcontrole_u)
@@ -57,7 +58,9 @@ FROM
 WHERE
 	(LEFT(QDWH.dbo.QSagroSoftUren.ProjectNr, 2) = @Division)
 			-- voorwaarde medewerker en project bekend in Exact alleen administatie 21
-		and humres.res_id is not null and ProjectNr in (select ProjectNr collate database_default	from PRProject)
+		and humres.res_id is not null
+		-- onderstaande regel verwijderd, omdat anders de nieuwe projecten niet worden aagnemaakt.
+/*		and ProjectNr in (select ProjectNr collate database_default	from PRProject) */
 		and emp_stat ='A'
 		-- indirecte projecten uitsluiten:
 		and  left(right([ProjectNr],4),3) not in (999)
