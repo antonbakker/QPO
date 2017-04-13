@@ -23,7 +23,7 @@ FROM
 	LEFT OUTER JOIN	humres
 		ON QDWH.dbo.QSagroSoftUren.BSN = humres.socsec_nr collate database_default
 WHERE
-	(LEFT(QDWH.dbo.QSagroSoftUren.ProjectNr, 2) = Division)
+	(LEFT(QDWH.dbo.QSagroSoftUren.ProjectNr, 2) = @Division)
 	and humres.res_id is not null
 	and emp_stat ='A'
 	-- onderstaande regel verwijderd, omdat anders de nieuwe projecten niet worden aagnemaakt.
