@@ -1,3 +1,5 @@
+set transaction isolation level read uncommitted
+
 DECLARE @Division INT = 21
 DECLARE @Administrator INT = 1
 
@@ -38,7 +40,7 @@ SELECT
   QSagroSoftUrenMat.Uren AS aantal,
   CAST(QSagroSoftUrenMat.KostenIntern AS float)	*-1 AS bedrag,
 	Isnull(kstpl.oms25_0, QSagroSoftUrenMat.Omschrijving) AS kploms,
-         -- Kostenplaats worden automatisch aangemaakt
+  -- Kostenplaats worden automatisch aangemaakt
   'R' + convert(varchar(10),Nr+1) + 'W' + CONVERT(Varchar(10), DATEPART(week,DatumUrenReg)) + 'MT' AS consref,
 	QSagroSoftUrenMat.id,
 	@Administrator AS medew
