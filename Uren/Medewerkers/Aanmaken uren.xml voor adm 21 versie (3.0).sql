@@ -1,4 +1,5 @@
 /* Dit is de nette query, waarbij in de export query de grootboekrekeningen worden meegegeven */
+/* In deze query wordt het projectnummer voorafgegaan door 99 als het om door te belasten uren gaat | indien voorzien van een kostenplaats */
 
 set transaction isolation level read uncommitted
 DECLARE @Division INT = 21
