@@ -12,15 +12,18 @@ SELECT
   humres.res_id AS res_id,
   'R' + convert(varchar(10), Nr + 1) + 'W' + CONVERT(Varchar(10), DATEPART(week, DatumUrenReg))+'OH' AS consref,
   QSagroSoftUrenOH.id AS id,
-	QSagroSoftUren.kstdr AS kstdr
+	QSagroSoftUrenOH.kstdr AS kstdr
 
 FROM
   QDWH.dbo.QSagroSoftUrenOH
-    LEFT OUTER JOIN humres ON QDWH.dbo.QSagroSoftUrenOH.BSN = humres.socsec_nr
+    LEFT OUTER JOIN humres ON QDWH.dbo.QSagroSoftUrenOH.BSN COLLATE database_default = humres.socsec_nr
     LEFT OUTER JOIN kstpl ON QDWH.dbo.QSagroSoftUrenOH.KostenplaatsMaterieel COLLATE database_default = kstpl.kstplcode
 
 WHERE
-  (LEFT(QDWH.dbo.QSagroSoftUrenOH.ProjectNr, 2) = @Division)
+  (
+    (LEN(ProjectNr) = 8 and LEFT(QDWH.dbo.QSagroSoftUrenOH.ProjectNr, 2) = @Division) OR
+    (LEN(ProjectNr) = 10 and RIGHT(LEFT(QDWH.dbo.QSagroSoftUrenOH.ProjectNr, 4),2) = @Division)
+  )
   AND emp_stat ='A'
   AND QSagroSoftUrenOH.id not in (select * from [QDWH]..Q_idcontrole_oh)
 
@@ -37,14 +40,17 @@ SELECT
   humres.res_id AS res_id,
   'R' + convert(varchar(10), Nr + 1) + 'W' + CONVERT(Varchar(10), DATEPART(week,DatumUrenReg))+'OH' AS consref,
   QSagroSoftUrenOH.id AS id,
-	QSagroSoftUren.kstdr AS kstdr
+	QSagroSoftUrenOH.kstdr AS kstdr
 
 FROM
   QDWH.dbo.QSagroSoftUrenOH
-    LEFT OUTER JOIN humres ON QDWH.dbo.QSagroSoftUrenOH.BSN = humres.socsec_nr
+    LEFT OUTER JOIN humres ON QDWH.dbo.QSagroSoftUrenOH.BSN COLLATE database_default = humres.socsec_nr
     LEFT OUTER JOIN kstpl ON QDWH.dbo.QSagroSoftUrenOH.KostenplaatsMaterieel COLLATE database_default = kstpl.kstplcode
 
 WHERE
-  (LEFT(QDWH.dbo.QSagroSoftUrenOH.ProjectNr, 2) = @Division)
+  (
+    (LEN(ProjectNr) = 8 and LEFT(QDWH.dbo.QSagroSoftUrenOH.ProjectNr, 2) = @Division) OR
+    (LEN(ProjectNr) = 10 and RIGHT(LEFT(QDWH.dbo.QSagroSoftUrenOH.ProjectNr, 4),2) = @Division)
+  )
   AND emp_stat ='A'
   AND QSagroSoftUrenOH.id not in (select * from [QDWH]..Q_idcontrole_oh)

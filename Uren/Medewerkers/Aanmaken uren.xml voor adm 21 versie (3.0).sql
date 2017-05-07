@@ -28,13 +28,15 @@ FROM
 	LEFT OUTER JOIN	humres
 		ON QDWH.dbo.QSagroSoftUren.BSN = humres.socsec_nr collate database_default
 WHERE
-	(LEFT(QDWH.dbo.QSagroSoftUren.ProjectNr, 2) = @Division)
+	(
+		(LEN(ProjectNr) = 8 and LEFT(QDWH.dbo.QSagroSoftUren.ProjectNr, 2) = @Division) OR
+		(LEN(ProjectNr) = 10 and RIGHT(LEFT(QDWH.dbo.QSagroSoftUren.ProjectNr, 4),2) = @Division)
+	)
 	and humres.res_id is not null
 	and emp_stat ='A'
 	-- onderstaande regel verwijderd, omdat anders de nieuwe projecten niet worden aagnemaakt.
 /*	and ProjectNr in (select ProjectNr collate database_default from PRProject) */
 			-- indirecte projecten uitsluiten:
-	and  left(right([ProjectNr],4),3)  not in (999)
 	and QSagroSoftUren.id not in (select  freefield5 from [QDWH]..Q_idcontrole_u)
 
 union all
@@ -63,12 +65,14 @@ FROM
 			ON QDWH.dbo.QSagroSoftUren.BSN = humres.socsec_nr collate database_default
 
 WHERE
-	(LEFT(QDWH.dbo.QSagroSoftUren.ProjectNr, 2) = @Division)
+	(
+		(LEN(ProjectNr) = 8 and LEFT(QDWH.dbo.QSagroSoftUren.ProjectNr, 2) = @Division) OR
+		(LEN(ProjectNr) = 10 and RIGHT(LEFT(QDWH.dbo.QSagroSoftUren.ProjectNr, 4),2) = @Division)
+	)
 			-- voorwaarde medewerker en project bekend in Exact alleen administatie 21
-		and humres.res_id is not null
+	and humres.res_id is not null
 		-- onderstaande regel verwijderd, omdat anders de nieuwe projecten niet worden aagnemaakt.
 /*		and ProjectNr in (select ProjectNr collate database_default	from PRProject) */
-		and emp_stat ='A'
+	and emp_stat ='A'
 		-- indirecte projecten uitsluiten:
-		and  left(right([ProjectNr],4),3) not in (999)
-		and QSagroSoftUren.id not in (select freefield5 from [qdwh]..Q_idcontrole_u)
+	and QSagroSoftUren.id not in (select freefield5 from [qdwh]..Q_idcontrole_u)

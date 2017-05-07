@@ -1,6 +1,6 @@
 set transaction isolation level read uncommitted
 
-DECLARE @Division INT = 21
+DECLARE @Division INT = 61
 DECLARE @Administrator INT = 1
 
 SELECT
@@ -23,7 +23,10 @@ FROM
 	LEFT OUTER JOIN kstpl ON QSagroSoftUrenMat.KostenPlaats = kstpl.kstplcode collate database_default
 
 WHERE
-	LEFT(QSagroSoftUrenMat.ProjectNr, 2) = @Division
+(
+	(LEN(ProjectNr) = 8 and LEFT(QDWH.dbo.QSagroSoftUrenMat.ProjectNr, 2) = @Division) OR
+	(LEN(ProjectNr) = 10 and RIGHT(LEFT(QDWH.dbo.QSagroSoftUrenMat.ProjectNr, 4),2) = @Division)
+)
 	-- onderstaande conditite verwijderd om er voor te zorgen dat projecten worden aangemaakt
 /*	AND QSagroSoftUrenMat.ProjectNr IN (SELECT ProjectNr collate database_default FROM PRProject) */
 	AND QSagroSoftUrenMat.id not in (select * from [QDWH]..Q_idcontrole_mat)
@@ -50,7 +53,10 @@ FROM
 	LEFT OUTER JOIN kstpl ON QSagroSoftUrenMat.KostenPlaats = kstpl.kstplcode collate database_default
 
 WHERE
-	LEFT(QSagroSoftUrenMat.ProjectNr, 2) = @Division
+(
+	(LEN(ProjectNr) = 8 and LEFT(QDWH.dbo.QSagroSoftUrenMat.ProjectNr, 2) = @Division) OR
+	(LEN(ProjectNr) = 10 and RIGHT(LEFT(QDWH.dbo.QSagroSoftUrenMat.ProjectNr, 4),2) = @Division)
+)
 	-- onderstaande conditite verwijderd om er voor te zorgen dat projecten worden aangemaakt
 /*	AND  QSagroSoftUrenMat.ProjectNr IN (SELECT ProjectNr collate database_default FROM PRProject) */
 		 				-- project moet aanwezig zijn in Exact
