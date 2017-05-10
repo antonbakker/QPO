@@ -2,7 +2,7 @@ drop table QSagroSoftUrenOH
 
 delete from Q_idcontrole_oh
 insert into Q_idcontrole_oh
-select * from 
+select * from
 (
 select distinct freefield5 from [512]..gbkmut
 where dagbknr =' 98'  and reknr in ('     4400','     4450','     4813') and transtype  not in( 'V')

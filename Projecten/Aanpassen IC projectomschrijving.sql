@@ -3,8 +3,8 @@ DECLARE @name VARCHAR(50) -- database name
 DECLARE db_cursor CURSOR FOR
 SELECT name
 FROM master.dbo.sysdatabases
-WHERE name IN ('512', '513', '514', '521', '522', '523', '524', '525', '527', '528', '541', '542', '543', '544', '561', '571', '581', '582', '583', '591', '593', '594')  -- include these databases
-/*WHERE name IN ('421')*/
+/*WHERE name IN ('512', '513', '514', '521', '522', '523', '524', '525', '527', '528', '541', '542', '543', '544', '561', '571', '581', '582', '583', '591', '593', '594') */ -- include these databases
+WHERE name IN ('961')
 
 
 OPEN db_cursor
@@ -49,7 +49,7 @@ SET @query =
           [' + @name + '].[dbo].[PRProject]
         WHERE LEN(ProjectNr) = 10
       ) AS ICP
-	  WHERE EXT.ProjectNr = ICP.ProjectNr
+	  WHERE ProjectNr = ICP.ProjectNr
     )
   WHERE ProjectNr = Description
 '

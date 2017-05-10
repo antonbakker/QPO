@@ -4,5 +4,6 @@ Created AS Aanmaakdatum,
 id AS Urenid,
 ProjectNr as Projectnr,
 Uren AS Uren,
-Werkzaamheden AS Werkzaamheden
+Werkzaamheden AS Werkzaamheden,
+Type AS Type
 from QSagroSoftUrenIC
