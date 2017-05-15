@@ -7,7 +7,8 @@ SELECT
   QDWH.dbo.QSagroSoftUrenOH.KostenIntern AS bedrag,
   QDWH.dbo.QSagroSoftUrenOH.Werkzaamheden AS omschrijving,
   QDWH.dbo.QSagroSoftUrenOH.KostenplaatsMaterieel AS kpl,
-  RIGHT(QDWH.dbo.QSagroSoftUrenOH.ProjectNr, 4) AS reknr,
+  -- onderstaande regel aangepast, zodat het juiste rekeningnummer wordt geselecteerd en niet het gedeelte van het projectnummer
+  QDWH.dbo.QSagroSoftUrenOH.grootboek AS reknr,
   kstpl.oms25_0 AS kploms,
   humres.res_id AS res_id,
   'R' + convert(varchar(10), Nr + 1) + 'W' + CONVERT(Varchar(10), DATEPART(week, DatumUrenReg))+'OH' AS consref,
