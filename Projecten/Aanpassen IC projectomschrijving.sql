@@ -21,7 +21,7 @@ SET @query =
    SET Description =
     (
     SELECT
-      ''Intercompany project'' + '' '' + Opdrachtgever + '' 20'' + Jaar + ''W'' + Week
+      ''Intercompany project'' + '' '' + Opdrachtgever + '' 20'' + Jaar + ''-W'' + Week
     FROM
       (
         SELECT
@@ -48,6 +48,7 @@ SET @query =
         FROM
           [' + @name + '].[dbo].[PRProject]
         WHERE LEN(ProjectNr) = 10
+        and ProjectNr like ''99%''
       ) AS ICP
 	  WHERE ProjectNr = ICP.ProjectNr
     )
