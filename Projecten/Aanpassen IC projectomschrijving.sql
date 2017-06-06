@@ -6,7 +6,7 @@ FROM master.dbo.sysdatabases
 WHERE name IN ('512', '513', '514', '521', '522', '523', '524', '525', '527', '528', '541', '542', '543', '544', '561', '571', '581', '582', '583', '591', '593', '594') -- include these databases
 /* WHERE name IN ('961') */
 
-
+ 
 OPEN db_cursor
 FETCH NEXT FROM db_cursor INTO @name
 
