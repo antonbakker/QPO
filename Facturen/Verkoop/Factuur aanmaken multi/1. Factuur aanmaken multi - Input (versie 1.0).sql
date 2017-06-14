@@ -6,41 +6,43 @@ create table #divisions	(	id int identity (1,1),
 						)
 						
 insert into #divisions 
-select 	'512' 
-union all
-select 	'521' 
-union all
-select 	'522'
-union all
-select 	'523'
-union all
-select 	'524'
-union all
-select 	'525'
-union all
-select 	'527' 
-union all
-select 	'528'
-union all
-select 	'541'
-union all
-select 	'542' 
-union all
-select 	'543'
-union all
-select 	'547'
-union all
-select 	'561'
+
+	select 	'512' 
+	union all
+	select 	'521' 
+	union all
+	select 	'522'
+	union all
+	select 	'523'
+	union all
+	select 	'524'
+	union all
+	select 	'525'
+	union all
+	select 	'527' 
+	union all
+	select 	'528'
+	union all
+	select 	'541'
+	union all
+	select 	'542' 
+	union all
+	select 	'543'
+	union all
+	select 	'547'
+	union all
+	select 	'561'
+
 -- EINDE -- lijst met betrokken administraties
 
 
 -- START -- opbouwen tabel met reeds geboekte doorbelastingen
-create table #check	(	id int identity (1,1),
-						targetDivision varchar(50),
-						
-						freefield1 varchar(75)
-					
-					)
+create table #check
+	(
+		id int identity (1,1),
+		targetDivision varchar(50),				
+		freefield1 varchar(75)
+	)
 
 declare @counter_current int = 1
 declare @division_current varchar(50)
@@ -49,38 +51,22 @@ while @counter_current <= ( select MAX(id) from #divisions )
 	begin
 		set @division_current = ( select top 1 division from #divisions where id = @counter_current )
 		set @query =							
-						'
-					SELECT distinct	
-					
-					 @division_current, 
+			'
+				SELECT distinct	
+					@division_current, 
 					isnull(frsrg.ordernr, ''1'')
-					 
-FROM   [' + @division_current  + ']..frsrg 
+				FROM   [' + @division_current  + ']..frsrg 
 
-						
-		UNION ALL
+				UNION ALL
 		
-						SELECT distinct	
-					
-					 @division_current,
+				SELECT distinct	
+					@division_current,
 					isnull(frhsrg.ordernr, ''1'')
-					
-					
-FROM   [' + @division_current  + ']..frhsrg 
-			
-						
-						
-						'
-						
-						
+				FROM   [' + @division_current  + ']..frhsrg 
+			'				
 		insert into #check
-		exec sp_executesql @query,N'@division_current varchar(50)
-                               ',
-                                @division_current = @division_current
-
-		
+		exec sp_executesql @query,N'@division_current varchar(50)', @division_current = @division_current
 		set @counter_current = @counter_current + 1
-	
 	end 
 	
 	--select * from #check
@@ -90,18 +76,19 @@ FROM   [' + @division_current  + ']..frhsrg
 
 
 -- START -- opbouwen tabel met kopregel gegevens
-create table #result	(	id int identity(1,1),
-							--description varchar(60),
-							--Kdatum datetime,
-							--Kdocdate datetime,
-							targetDivision varchar(50),
-							debnr varchar(50),
-							uwref varchar(50),
-							oms varchar(50),
-							periode varchar (50),
-							--input varchar(50)
-					
-						)
+create table #result
+	(
+		id int identity(1,1),
+		--description varchar(60),
+		--Kdatum datetime,
+		--Kdocdate datetime,
+		targetDivision varchar(50),
+		debnr varchar(50),
+		uwref varchar(50),
+		oms varchar(50),
+		periode varchar (50),
+		--input varchar(50)
+	)
 							
 
 set @counter_current = 1
@@ -111,16 +98,24 @@ while @counter_current <= ( select MAX(id) from #divisions )
 	begin 
 		set @division_current = ( select top 1 division from #divisions where id = @counter_current )
 		
-		set @query =	'	select distinct
-		@division_current,
-							''399''+ LEFT (kstdrcode,2) debnr,
-						g.kstdrcode uwref,
-						g.project,
-						year(docdate)*100+DATEPART (week,docdate)  periode
-from [' + @division_current  + ']..gbkmut g
-where g.dagbknr= '' 98'' And transtype not in( ''V'',''B'') AND (transsubtype <> ''X'') and kstdrcode is not null and project is not null
-AND ( g.id ) Not IN (SELECT freefield1 FROM   #CHECK)  
-						'
+		set @query =
+			'
+				select distinct
+					@division_current,
+					''399''+ LEFT (kstdrcode,2) debnr,
+					g.kstdrcode uwref,
+					g.project,
+					year(docdate)*100+DATEPART (week,docdate)  periode
+				from
+					[' + @division_current  + ']..gbkmut g
+				where
+					g.dagbknr= '' 98'' 
+					AND transtype not in( ''V'',''B'')
+					AND (transsubtype <> ''X'')
+					AND kstdrcode is not null
+					AND project is not null
+					AND ( g.id ) Not IN (SELECT freefield1 FROM   #CHECK)  
+			'
 			
 		insert into #result
 		exec sp_executesql @query,N'@division_current varchar(50)
