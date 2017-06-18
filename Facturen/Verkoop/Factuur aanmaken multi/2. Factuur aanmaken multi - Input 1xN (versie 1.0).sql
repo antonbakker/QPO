@@ -50,38 +50,26 @@ while @counter_current <= ( select MAX(id) from #divisions )
 	begin
 		set @division_current = ( select top 1 division from #divisions where id = @counter_current )
 		set @query =							
-						'
+			'
+				SELECT distinct			
+					@division_current, 
+					isnull(frsrg.ordernr, ''1'')	 
+				FROM
+					[' + @division_current  + ']..frsrg 
+
+				UNION ALL
+		
 				SELECT distinct	
-					
-					 @division_current, 
-					isnull(frsrg.ordernr, ''1'')
-					 
-FROM   [' + @division_current  + ']..frsrg 
-
-						
-		UNION ALL
-		
-						SELECT distinct	
-					
-					 @division_current,
+					@division_current,
 					isnull(frhsrg.ordernr, ''1'')
-					
-					
-FROM   [' + @division_current  + ']..frhsrg 
-			
-						
-							
-						'
-						
-						
+				FROM   [' + @division_current  + ']..frhsrg 
+			'		
 		insert into #check
-		exec sp_executesql @query,N'@division_current varchar(50)
-                               ',
-                                @division_current = @division_current
-
-		
+		exec
+			sp_executesql @query,
+			N'@division_current varchar(50)',
+            @division_current = @division_current
 		set @counter_current = @counter_current + 1
-	
 	end 
 	
 	--select * from #check
@@ -91,28 +79,30 @@ FROM   [' + @division_current  + ']..frhsrg
 
 
 -- START -- opbouwen tabel met subregel gegevens
-create table #result	(	id int identity(1,1),
-						bkstnr varchar(50),
-docdate datetime,
-datum datetime,
-itemcode varchar(50),
-btwcode varchar(4),
-omschrijving varchar(60),
-aantal float,
-debnr varchar(50),
-reknr varchar(50),
-prijs float,
-bedrag float,
-kstdrcode varchar(50),
-projectcode varchar(50),
-uwref varchar(50),
-gmid int,
-res_id int,
-targetDivision varchar(50),
-	periode varchar(80),
-	FE varchar (50),
---input varchar(50)
-						)
+create table #result
+	(
+		id int identity(1,1),
+		bkstnr varchar(50),
+		docdate datetime,
+		datum datetime,
+		itemcode varchar(50),
+		btwcode varchar(4),
+		omschrijving varchar(60),
+		aantal float,
+		debnr varchar(50),
+		reknr varchar(50),
+		prijs float,
+		bedrag float,
+		kstdrcode varchar(50),
+		projectcode varchar(50),
+		uwref varchar(50),
+		gmid int,
+		res_id int,
+		targetDivision varchar(50),
+		periode varchar(80),
+		FE varchar (50),
+		--input varchar(50)
+	)
 							
 
 set @counter_current = 1
@@ -124,31 +114,45 @@ while @counter_current <= ( select MAX(id) from #divisions )
 		
 		set @query =	
 		'	
-			select 
-			bkstnr,
-			docdate,datum,
-			''V2000''  itemcode,
-			''10''	btwcode,
-			case  g.reknr 
-			when  ''     5910'' then kstdrcode +'' personeel ''
-			when  ''     5920'' then kstdrcode  + '' materieel ''
-			end  omschrijving,
-			g.aantal,
-			''399''+ LEFT (kstdrcode,2) debnr,
-			reknr,
-			bdr_hfl/aantal prijs,
-			 bdr_hfl bedrag, g.kstdrcode, g.project projectcode 
-			,g.kstdrcode uwref,
-			 g.id,
-			1 res_id,
+			SELECT 
+				bkstnr,
+				docdate,
+				datum,
+				''V2000''  itemcode,
+				''10''	btwcode,
+				case  g.reknr 
+					when  ''     5910'' then kstdrcode +'' personeel ''
+					when  ''     5920'' then kstdrcode  + '' materieel ''
+				end  omschrijving,
+				g.aantal,
+				''399''+ LEFT (kstdrcode,2) debnr,
+				reknr,
+				bdr_hfl/aantal prijs,
+				bdr_hfl bedrag,
+				g.kstdrcode,
+				g.project projectcode,
+				g.kstdrcode uwref,
+				g.id,
+				1 res_id,
 				@division_current,
-			(year(docdate)*100+DATEPART (week,docdate) ),
-			(select StringValue from [' + @division_current  + ']..Settings
-			 where SettingGroup =''eaccount'' and settingname =''VATFiscalGroupNo'' ) as FE
-			from [' + @division_current  + ']..gbkmut g
-			where g.dagbknr= '' 98''
-			And transtype not in( ''V'',''B'') AND (transsubtype <> ''X'') 
-			and kstdrcode is not null and project is not null
+				(year(docdate)*100+DATEPART (week,docdate) ),
+				(
+					SELECT
+						StringValue
+					FROM
+						[' + @division_current  + ']..Settings
+					where
+						SettingGroup =''eaccount''
+						and settingname =''VATFiscalGroupNo'' 
+				) as FE
+			FROM
+				[' + @division_current  + ']..gbkmut g
+			WHERE
+				g.dagbknr= '' 98''
+				AND transtype not in( ''V'',''B'')
+				AND (transsubtype <> ''X'') 
+				AND kstdrcode is not null
+				AND project is not null
 			
 		'
 			
@@ -165,34 +169,45 @@ while @counter_current <= ( select MAX(id) from #divisions )
 
 
 --select * from #check -- tbv test
-select 
-bkstnr,
-docdate,
-datum,
-case when 
-Isnull(FE, '') <> '' and LEFT (kstdrcode,2) in ('12','21','22','23','24','25','41','42','44','46','81','61')--tussen FE
-then 'V2006' else 'V2007' end itemcode,
-case when 
-Isnull(FE, '') <> '' and LEFT (kstdrcode,2) in ('12','21','22','23','24','25','41','42','44','46','81','61')--tussen FE
-then '13' else '10' end btwcode,
-omschrijving,
-aantal,
-debnr,
-reknr,
-prijs,
-bedrag,
-kstdrcode,
-projectcode,
-uwref,
-gmid,
-res_id,
-targetDivision,
-targetDivision+'-'+debnr+'-'+periode as groepering
-from #result
-where  gmid Not IN (SELECT freefield1 FROM   #CHECK) 
-order by groepering,kstdrcode,reknr-- tbv test 
---select * from #divisions -- tbv test	
--- EINDE -- opbouwen tabel met kopregel gegevens
+SELECT 
+	bkstnr,
+	docdate,
+	datum,
+	CASE
+		WHEN
+			Isnull(FE, '') <> '' 
+			AND LEFT (kstdrcode,2) in ('12','21','22','23','24','25','41','42','44','46','81','61')--tussen FE
+			THEN 'V2006' else 'V2007'
+	END itemcode,
+	CASE
+		WHEN
+			Isnull(FE, '') <> '' 
+			AND LEFT (kstdrcode,2) in ('12','21','22','23','24','25','41','42','44','46','81','61')--tussen FE
+			THEN '13' else '10'
+	END btwcode,
+	omschrijving,
+	aantal,
+	debnr,
+	reknr,
+	prijs,
+	bedrag,
+	kstdrcode,
+	projectcode,
+	uwref,
+	gmid,
+	res_id,
+	targetDivision,
+	targetDivision+'-'+debnr+'-'+periode as groepering
+FROM
+	#result
+WHERE
+	gmid Not IN (SELECT freefield1 FROM   #CHECK) 
+ORDER BY
+	groepering,
+	kstdrcode,
+	reknr-- tbv test 
+	-select * from #divisions -- tbv test	
+	-- EINDE -- opbouwen tabel met kopregel gegevens
 drop table #check
 drop table #result
 drop table #divisions
