@@ -31,8 +31,8 @@ union all
 select 	'547'
 union all
 select 	'561'
-union all
-select 	'961'
+-- union all
+-- select 	'961'
 
 
 -- EINDE -- lijst met betrokken administraties
@@ -51,7 +51,7 @@ while @counter_current <= ( select MAX(id) from #divisions )
 	begin
 		set @division_current = ( select top 1 division from #divisions where id = @counter_current )
 		set @query =	'
-							select distinct Isnull(freefield1,1) from   [' + @division_current  + ']..gbkmut WITH(NOLOCK) where dagbknr= '' 51''
+							select distinct Isnull(freefield1,1) from   [' + @division_current  + ']..gbkmut WITH(NOLOCK) where dagbknr= '' 40''
 						'
 						
 		insert into #check

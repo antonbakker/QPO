@@ -32,8 +32,8 @@ union all
 select 	'547'
 union all
 select 	'561'
-union all
-select 	'961'
+-- union all
+-- select 	'961'
 -- EINDE -- lijst met betrokken administraties
 
 
